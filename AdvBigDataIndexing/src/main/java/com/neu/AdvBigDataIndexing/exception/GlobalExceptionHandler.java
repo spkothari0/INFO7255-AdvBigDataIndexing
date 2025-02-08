@@ -19,6 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
         String detail = ex.getLocalizedMessage();
+        System.err.println("Exception: " + detail);
         return new ResponseEntity<Object>(new JSONObject().put("Server Error", detail).toString(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 
 @RequiredArgsConstructor
@@ -48,7 +47,7 @@ public class PlanController {
 
         String newEtag = planService.createPlan(json, key);
 
-        return ResponseEntity.status(HttpStatus.CREATED).eTag(newEtag).body(new JSONObject().put("Message", "Created data with key: " + json.get("objectId")));
+        return ResponseEntity.status(HttpStatus.CREATED).eTag(newEtag).body(new JSONObject().put("Message", "Created data with key: " + json.get("objectId")).toString());
     }
 
     @GetMapping(value = "/{objectType}/{objectId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -63,25 +62,19 @@ public class PlanController {
         // Check if the ETag provided is not corrupt
         List<String> ifNoneMatch;
         try {
-            ifNoneMatch = headers.getIfNoneMatch();
+            ifNoneMatch = headers.get("if-none-match");
         } catch (Exception e) {
             throw new BadRequestException("ETag value invalid! Make sure the ETag value is a string!");
         }
 
         String eTag = planService.getETag(key);
 
-        HttpHeaders headersToSend = new HttpHeaders();
-        headersToSend.setETag(eTag);
-
-        if (objectType.equals("plan") && ifNoneMatch.contains(eTag))
-            return new ResponseEntity<>(null, headersToSend, HttpStatus.NOT_MODIFIED);
-
-        Map<String, Object> objectToReturn = planService.getPlan(key);
-
-        if (objectType.equals("plan"))
-            return new ResponseEntity<>(objectToReturn, headersToSend, HttpStatus.OK);
-
-        return new ResponseEntity<>(objectToReturn, HttpStatus.OK);
+        if (ifNoneMatch!=null && ifNoneMatch.contains(eTag))
+            return new ResponseEntity<>(null, HttpStatus.NOT_MODIFIED);
+        else {
+            JSONObject objectToReturn = planService.getPlan(key);
+            return new ResponseEntity<>(objectToReturn.toString(), HttpStatus.OK);
+        }
     }
 
     @DeleteMapping("/{objectType}/{objectId}")

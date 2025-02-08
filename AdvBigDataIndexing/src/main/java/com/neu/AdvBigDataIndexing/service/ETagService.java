@@ -20,6 +20,6 @@ public class ETagService {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        return "\""+encoded+"\"";
+        return encoded;
     }
 }
