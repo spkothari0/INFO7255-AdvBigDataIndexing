@@ -1,8 +1,8 @@
 package com.neu.AdvBigDataIndexing.exception;
 
+import org.apache.coyote.BadRequestException;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
@@ -11,48 +11,53 @@ import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
+
 @ControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler
-{
+public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
-        String detail= ex.getLocalizedMessage();
+    public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
+        String detail = ex.getLocalizedMessage();
         return new ResponseEntity<Object>(new JSONObject().put("Server Error", detail).toString(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public final ResponseEntity<Object> handleBadRequestException(BadRequestException ex) {
+        String detail = ex.getLocalizedMessage();
+        return new ResponseEntity<Object>(new JSONObject().put("BadRequestException: ", detail).toString(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public final ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
+        String detail = ex.getLocalizedMessage();
+        return new ResponseEntity<Object>(new JSONObject().put("RuntimeException: ", detail).toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(JSONException.class)
-    public final ResponseEntity<Object> handleResourceNotFoundException(JSONException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleResourceNotFoundException(JSONException ex) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         return new ResponseEntity<Object>(new JSONObject().put("JsonException: ", details).toString(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    public final ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         List<String> details = new ArrayList<>();
-        for(ObjectError error : ex.getBindingResult().getAllErrors()) {
+        for (ObjectError error : ex.getBindingResult().getAllErrors()) {
             details.add(error.getDefaultMessage());
         }
         return new ResponseEntity<Object>(new JSONObject().put("Validation Error", details).toString(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        String detail= ex.getLocalizedMessage();
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
+        String detail = ex.getLocalizedMessage();
         return new ResponseEntity<Object>(new JSONObject().put("Validation Error", detail).toString(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MissingPathVariableException.class)
-    protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-//    	List<String> details = new ArrayList<>();
-//        for(ObjectError error : ex.get) {
-//            details.add(error.getDefaultMessage());
-//        }
-//        RestApiError error = new RestApiError("Validation Failed", details);
+    protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex) {
         return new ResponseEntity<Object>("Please enter all fields", HttpStatus.BAD_REQUEST);
     }
 }

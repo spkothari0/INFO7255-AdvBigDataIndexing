@@ -24,11 +24,9 @@ import java.util.Map;
 @RequestMapping(path = "/plan")
 public class PlanController {
     private final JsonValidator validator;
-
     private final PlanService planService;
 
-
-    @PostMapping(value = "/plan", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createPlan(@Valid @RequestBody(required = false) String planObject) throws JSONException, BadRequestException {
 
         if (planObject == null || planObject.isEmpty())
@@ -89,24 +87,11 @@ public class PlanController {
 
     @DeleteMapping("/{objectType}/{objectId}")
     public ResponseEntity<?> deletePlan(@PathVariable String objectId,
-                                        @PathVariable String objectType,
-                                        @RequestHeader HttpHeaders headers) throws BadRequestException {
+                                        @PathVariable String objectType) {
         String key = objectType + "_" + objectId;
         if (!planService.isKeyPresent(key))
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new JSONObject().put("Message", "ObjectId does not exist").toString());
-
-        String eTag = planService.getETag(key);
-        List<String> ifMatch;
-        try {
-            ifMatch = headers.getIfMatch();
-        } catch (Exception e) {
-            throw new BadRequestException("ETag value invalid! Make sure the ETag value is a string!");
-        }
-
-        if (ifMatch.isEmpty())
-            throw new BadRequestException("ETag is not provided with request!");
-
         planService.deletePlan(key);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
