@@ -73,7 +73,6 @@ public class PlanController {
         HttpHeaders headersToSend = new HttpHeaders();
         headersToSend.setETag(eTag);
 
-
         if (objectType.equals("plan") && ifNoneMatch.contains(eTag))
             return new ResponseEntity<>(null, headersToSend, HttpStatus.NOT_MODIFIED);
 

@@ -1,5 +1,6 @@
 package com.neu.AdvBigDataIndexing.service;
 
+import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -8,14 +9,10 @@ import java.util.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class PlanService {
     private final Jedis jedis;
     private final ETagService eTagService;
-
-    public PlanService(Jedis jedis, ETagService eTagService) {
-        this.jedis = jedis;
-        this.eTagService = eTagService;
-    }
 
     public boolean isKeyPresent(String key) {
         Map<String, String> value = jedis.hgetAll(key);
