@@ -20,7 +20,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(path = "/plan")
+@RequestMapping(path = "/api/v1/plan")
 public class PlanController {
     private final JsonValidator validator;
     private final PlanService planService;
