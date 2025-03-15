@@ -68,7 +68,7 @@ public class PlanController {
 
         String eTag = planService.getETag(key);
 
-        if (ifNoneMatch!=null && ifNoneMatch.contains(eTag))
+        if (ifNoneMatch != null && ifNoneMatch.contains(eTag))
             return new ResponseEntity<>(null, HttpStatus.NOT_MODIFIED);
         else {
             JSONObject objectToReturn = planService.getPlan(key);
@@ -90,12 +90,22 @@ public class PlanController {
     public ResponseEntity<Object> patchPlan(@Valid @RequestBody String medicalPlan,
                                             @PathVariable String objectId, @RequestHeader HttpHeaders headers) throws BadRequestException {
 
+        if (medicalPlan == null || medicalPlan.isEmpty())
+            throw new BadRequestException("Request body is missing!");
 
         JSONObject planObject = new JSONObject(medicalPlan);
+        try {
+            validator.validateJson(planObject);
+        } catch (ValidationException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JSONObject().put("Error", ex.getErrorMessage()).toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
         List<String> ifNoneMatch;
         try {
-            ifNoneMatch = headers.get("if-none-match");
+            ifNoneMatch = headers.get("if-match");
         } catch (Exception e) {
             throw new BadRequestException("ETag value invalid! Make sure the ETag value is a string!");
         }
@@ -105,14 +115,15 @@ public class PlanController {
                     .body(new JSONObject().put("Message", "ObjectId does not exist").toString());
         }
 
+        if (ifNoneMatch == null)
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
+                    .body(new JSONObject().put("Message", "Precondition failed, missing eTag").toString());
+
         String newEtag = planService.patchPlan(planObject);
 
-        if (ifNoneMatch!=null && ifNoneMatch.contains(newEtag))
-            return new ResponseEntity<>(null, HttpStatus.NOT_MODIFIED);
-        else {
-            String key = "plan_" + objectId;
-            JSONObject objectToReturn = planService.getPlan(key);
-            return ResponseEntity.status(HttpStatus.OK).eTag(newEtag).body(objectToReturn.toString());
-        }
+        String key = "plan_" + objectId;
+        JSONObject objectToReturn = planService.getPlan(key);
+        return ResponseEntity.status(HttpStatus.OK).eTag(newEtag).body(objectToReturn.toString());
+
     }
 }
