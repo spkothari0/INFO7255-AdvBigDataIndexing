@@ -50,11 +50,10 @@ public class PlanController {
         return ResponseEntity.status(HttpStatus.CREATED).eTag(newEtag).body(new JSONObject().put("Message", "Created data with key: " + json.get("objectId")).toString());
     }
 
-    @GetMapping(value = "/{objectType}/{objectId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{objectId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getPlan(@PathVariable String objectId,
-                                     @PathVariable String objectType,
                                      @RequestHeader HttpHeaders headers) throws JSONException, BadRequestException {
-        String key = objectType + "_" + objectId;
+        String key = "plan_" + objectId;
         if (!planService.isKeyPresent(key))
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new JSONObject().put("Message", "ObjectId does not exist").toString());
@@ -77,14 +76,43 @@ public class PlanController {
         }
     }
 
-    @DeleteMapping("/{objectType}/{objectId}")
-    public ResponseEntity<?> deletePlan(@PathVariable String objectId,
-                                        @PathVariable String objectType) {
-        String key = objectType + "_" + objectId;
+    @DeleteMapping("/{objectId}")
+    public ResponseEntity<?> deletePlan(@PathVariable String objectId) {
+        String key = "plan_" + objectId;
         if (!planService.isKeyPresent(key))
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new JSONObject().put("Message", "ObjectId does not exist").toString());
         planService.deletePlan(key);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping(path = "/{objectId}", produces = "application/json")
+    public ResponseEntity<Object> patchPlan(@Valid @RequestBody String medicalPlan,
+                                            @PathVariable String objectId, @RequestHeader HttpHeaders headers) throws BadRequestException {
+
+
+        JSONObject planObject = new JSONObject(medicalPlan);
+
+        List<String> ifNoneMatch;
+        try {
+            ifNoneMatch = headers.get("if-none-match");
+        } catch (Exception e) {
+            throw new BadRequestException("ETag value invalid! Make sure the ETag value is a string!");
+        }
+
+        if (!planService.isKeyPresent("plan_" + objectId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new JSONObject().put("Message", "ObjectId does not exist").toString());
+        }
+
+        String newEtag = planService.patchPlan(planObject);
+
+        if (ifNoneMatch!=null && ifNoneMatch.contains(newEtag))
+            return new ResponseEntity<>(null, HttpStatus.NOT_MODIFIED);
+        else {
+            String key = "plan_" + objectId;
+            JSONObject objectToReturn = planService.getPlan(key);
+            return ResponseEntity.status(HttpStatus.OK).eTag(newEtag).body(objectToReturn.toString());
+        }
     }
 }

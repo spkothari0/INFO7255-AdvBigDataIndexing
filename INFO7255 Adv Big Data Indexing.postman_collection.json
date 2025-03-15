@@ -1,0 +1,201 @@
+{
+	"info": {
+		"_postman_id": "82509fc1-c4b4-4f29-9047-73dca0369951",
+		"name": "INFO7255 Adv Big Data Indexing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17559906"
+	},
+	"item": [
+		{
+			"name": "Create Plan",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"planCostShares\": {\r\n        \"deductible\": 2000,\r\n        \"_org\": \"example.com\",\r\n        \"copay\": 23,\r\n        \"objectId\": \"1234vxc2324sdf-501\",\r\n        \"objectType\": \"membercostshare\"\r\n    },\r\n    \"linkedPlanServices\": [\r\n        {\r\n            \"linkedService\": {\r\n                \"_org\": \"example.com\",\r\n                \"objectId\": \"1234520xvc30asdf-502\",\r\n                \"objectType\": \"service\",\r\n                \"name\": \"Yearly physical\"\r\n            },\r\n            \"planserviceCostShares\": {\r\n                \"deductible\": 10,\r\n                \"_org\": \"example.com\",\r\n                \"copay\": 0,\r\n                \"objectId\": \"1234512xvc1314asdfs-503\",\r\n                \"objectType\": \"membercostshare\"\r\n            },\r\n            \"_org\": \"example.com\",\r\n            \"objectId\": \"27283xvx9asdff-504\",\r\n            \"objectType\": \"planservice\"\r\n        },\r\n        {\r\n            \"linkedService\": {\r\n                \"_org\": \"example.com\",\r\n                \"objectId\": \"1234520xvc30sfs-505\",\r\n                \"objectType\": \"service\",\r\n                \"name\": \"well baby\"\r\n            },\r\n            \"planserviceCostShares\": {\r\n                \"deductible\": 10,\r\n                \"_org\": \"example.com\",\r\n                \"copay\": 175,\r\n                \"objectId\": \"1234512xvc1314sdfsd-506\",\r\n                \"objectType\": \"membercostshare\"\r\n            },\r\n            \"_org\": \"example.com\",\r\n            \"objectId\": \"27283xvx9sdf-507\",\r\n            \"objectType\": \"planservice\"\r\n        }\r\n    ],\r\n    \"_org\": \"example.com\",\r\n    \"objectId\": \"12xvxc345ssdsds-508\",\r\n    \"objectType\": \"plan\",\r\n    \"planType\": \"inNetwork\",\r\n    \"creationDate\": \"12-12-2017\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/plan",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"plan"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch Plan",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "If-None-Match",
+						"value": "T6trxvrVWyRbAQ3QyZDzRvmzFSsQo3JTasFPvTfdRZo=",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"planCostShares\": {\r\n        \"deductible\": 2300,\r\n        \"_org\": \"example.com\",\r\n        \"copay\": 27,\r\n        \"objectId\": \"1234vxc2324sdf-501\",\r\n        \"objectType\": \"membercostshare\"\r\n    },\r\n    \"linkedPlanServices\": [\r\n        {\r\n            \"linkedService\": {\r\n                \"_org\": \"example.com\",\r\n                \"objectId\": \"1234520xvc30asdf-502\",\r\n                \"objectType\": \"service1\",\r\n                \"name\": \"Yearly physical\"\r\n            },\r\n            \"planserviceCostShares\": {\r\n                \"deductible\": 10,\r\n                \"_org\": \"example.com\",\r\n                \"copay\": 0,\r\n                \"objectId\": \"1234512xvc1314asdfs-503\",\r\n                \"objectType\": \"membercostshare\"\r\n            },\r\n            \"_org\": \"example.com\",\r\n            \"objectId\": \"27283xvx9asdff-504\",\r\n            \"objectType\": \"planservice\"\r\n        },\r\n        {\r\n            \"linkedService\": {\r\n                \"_org\": \"example.com\",\r\n                \"objectId\": \"1234520xvc30sfs-505aaaaa\",\r\n                \"objectType\": \"service\",\r\n                \"name\": \"well baby\"\r\n            },\r\n            \"planserviceCostShares\": {\r\n                \"deductible\": 10,\r\n                \"_org\": \"example.com\",\r\n                \"copay\": 175,\r\n                \"objectId\": \"1234512xvc1314sdfsd-506aaaaa\",\r\n                \"objectType\": \"membercostshare\"\r\n            },\r\n            \"_org\": \"example.com\",\r\n            \"objectId\": \"27283xvx9sdf-507aaaaa\",\r\n            \"objectType\": \"planservice\"\r\n        }\r\n    ],\r\n    \"_org\": \"example.com\",\r\n    \"objectId\": \"12xvxc345ssdsds-508\",\r\n    \"objectType\": \"plan\",\r\n    \"planType\": \"inNetwork\",\r\n    \"creationDate\": \"12-12-2017\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/plan/12xvxc345ssdsds-508",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"plan",
+						"12xvxc345ssdsds-508"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Plan",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "If-None-Match",
+						"value": "T6trxvrVWyRbAQ3QyZDzRvmzFSsQo3JTasFPvTfdRZo=",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/plan/12xvxc345ssdsds-508",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"plan",
+						"12xvxc345ssdsds-508"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Plan",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/plan/12xvxc345ssdsds-508",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"plan",
+						"12xvxc345ssdsds-508"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "scope",
+				"value": "openid email profile",
+				"type": "string"
+			},
+			{
+				"key": "accessTokenUrl",
+				"value": "https://oauth2.googleapis.com/token",
+				"type": "string"
+			},
+			{
+				"key": "authUrl",
+				"value": "https://accounts.google.com/o/oauth2/auth",
+				"type": "string"
+			},
+			{
+				"key": "clientSecret",
+				"value": "{{client_secret}}",
+				"type": "string"
+			},
+			{
+				"key": "clientId",
+				"value": "{{client_id}}",
+				"type": "string"
+			},
+			{
+				"key": "redirect_uri",
+				"value": "https://oauth.pstmn.io/v1/callback",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "client_id",
+			"value": "NULL",
+			"type": "string"
+		},
+		{
+			"key": "client_secret",
+			"value": "NULL",
+			"type": "string"
+		}
+	]
+}
