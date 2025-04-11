@@ -1,0 +1,97 @@
+GET _cat/indices?v
+
+# Get All Plans
+GET /plan-index/_search
+{
+  "query" : {
+    "match_all": {
+      
+    }
+ }
+}
+
+# Get all children for parent type "plan"
+GET plan-index/_search
+{
+  "query": {
+    "has_parent": {
+      "parent_type": "plan",
+      "query": {
+        "match_all": {}
+      }
+    }
+  }
+}
+
+# Get all child for specific parent id
+GET plan-index/_search
+{
+  "query": {
+    "has_parent": {
+      "parent_type": "plan",
+      "query": {
+        "match": {
+          "objectId": "12xvxc345ssdsds-508"
+        }
+      }
+    }
+  }
+}
+
+# Get plans which has child of specific id
+GET plan-index/_search
+{
+  "query": {
+    "has_child": {
+      "type": "membercostshare",
+      "query": {
+        "match": {
+          "objectId": "1234vxc2324sdf-501"
+        }
+      }
+    }
+  }
+}
+
+
+# Get all children of specific planservice
+GET plan-index/_search
+{
+  "query": {
+    "has_parent": {
+      "parent_type": "planservice",
+      "query": {
+        "match": {
+          "objectId": "27283xvx9sdf-507"
+        }
+      }
+    }
+  }
+}
+
+GET plan-index/_search
+{
+  "query": {
+    "has_parent": {
+      "parent_type": "planservice",
+      "query": {
+        "match": {
+          "objectId": "27283xvx9asdff-504"
+        }
+      }
+    }
+  }
+}
+
+# Wildcard match
+GET plan-index/_search
+{
+  "query": {
+    "wildcard": {
+      "_org": {
+        "value": "example*"
+      }
+    }
+  }
+}
+
