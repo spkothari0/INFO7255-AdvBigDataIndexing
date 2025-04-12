@@ -89,6 +89,54 @@ public class PlanController {
         }
     }
 
+    @PutMapping(value = "/{objectId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> putPlan(@RequestBody String medicalPlan,
+                                     @PathVariable String objectId, @RequestHeader HttpHeaders headers) throws Exception {
+
+        if (medicalPlan == null || medicalPlan.isEmpty())
+            throw new BadRequestException("Request body is missing!");
+
+        String key = "plan_" + objectId;
+        if (!planService.isKeyPresent(key)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new JSONObject().put("Message", "ObjectId does not exist").toString());
+        }
+
+        String eTag = planService.getETag(key);
+
+        List<String> ifMatch;
+        try {
+            ifMatch = headers.get("if-none-match");
+        } catch (Exception e) {
+            throw new Exception("ETag value invalid! Make sure the ETag value is a string!", e);
+        }
+
+        if (ifMatch.isEmpty())
+            throw new Exception("ETag is not provided with request!");
+        if (!ifMatch.contains(eTag))
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
+                .body(new JSONObject().put("Message", "Precondition failed, missing eTag").toString());
+
+        JSONObject json = new JSONObject(medicalPlan);
+        try {
+            validator.validateJson(json);
+        } catch (ValidationException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JSONObject().put("Error", ex.getErrorMessage()).toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        planService.deletePlan(key);
+        // Send message to queue for deleting previous indices for put
+        sendToQueue("DELETE", planService.getPlan(key).toString());
+
+        String newEtag = planService.createPlan(json, key);
+        // Send a message to queue for indexing
+        sendToQueue("SAVE", medicalPlan);
+
+        return ResponseEntity.status(HttpStatus.OK).eTag(newEtag).body(new JSONObject().put("Message", "Updated data for key: " + json.get("objectId")).toString());
+    }
+
     @DeleteMapping("/{objectId}")
     public ResponseEntity<?> deletePlan(@PathVariable String objectId) {
         String key = "plan_" + objectId;

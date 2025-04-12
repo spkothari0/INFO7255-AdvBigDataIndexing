@@ -1,5 +1,7 @@
 GET _cat/indices?v
 
+DELETE /plan-index
+
 # Get All Plans
 GET /plan-index/_search
 {
@@ -38,21 +40,64 @@ GET plan-index/_search
   }
 }
 
-# Get plans which has child of specific id
+
+
+# Get plancost for specific copay range
 GET plan-index/_search
 {
   "query": {
     "has_child": {
       "type": "membercostshare",
       "query": {
-        "match": {
-          "objectId": "1234vxc2324sdf-501"
+        "range": {
+          "copay": {
+            "gte": 10
+          }
         }
       }
     }
   }
 }
 
+GET plan-index/_search
+{
+  "query": {
+    "has_child": {
+      "type": "membercostshare",
+      "query": {
+        "match_all": {}
+      }
+    }
+  }
+}
+
+
+GET plan-index/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "objectType": {
+              "value": "planservice"
+            }
+          }
+        },
+        {
+          "has_parent": {
+            "parent_type": "plan",
+            "query": {
+              "term": {
+                "_id" : "12xvxc345ssdsds-508"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
 
 # Get all children of specific planservice
 GET plan-index/_search
@@ -94,4 +139,3 @@ GET plan-index/_search
     }
   }
 }
-
